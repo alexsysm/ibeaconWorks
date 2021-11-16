@@ -13,7 +13,7 @@ import AVKit
 class ViewController: UIViewController {
     
     let locationManager = CLLocationManager()
-    var player : AVAudioPlayer?
+//    var player : AVAudioPlayer?
 
     @IBOutlet weak var logger: UITextView!
 
@@ -139,25 +139,30 @@ class ViewController: UIViewController {
     }
     
     func playSound() {
-        guard let soundFileURL = Bundle.main.url(forResource: "FindPhoneSound", withExtension: "mp3") else {
-            return
-        }
-
-        do {
-            // Configure and activate the AVAudioSession
-            try AVAudioSession.sharedInstance().setCategory(.playback)
-            try AVAudioSession.sharedInstance().setActive(true)
-            UIApplication.shared.beginReceivingRemoteControlEvents()
-            
-            player = try AVAudioPlayer(contentsOf: soundFileURL)
-            
-            let timeInterval = 60.0
-            let timeOffset = player!.deviceCurrentTime + timeInterval
-            player!.play(atTime: timeOffset)
-        }
-        catch {
-            // Handle error
-        }
+//        guard let soundFileURL = Bundle.main.url(forResource: "FindPhoneSound", withExtension: "mp3") else {
+//            return
+//        }
+//
+//        do {
+//            // Configure and activate the AVAudioSession
+//            try AVAudioSession.sharedInstance().setCategory(.playback)
+//            try AVAudioSession.sharedInstance().setActive(true)
+//            UIApplication.shared.beginReceivingRemoteControlEvents()
+//
+//            player = try AVAudioPlayer(contentsOf: soundFileURL)
+//
+//            let timeInterval = 60.0
+//            let timeOffset = player!.deviceCurrentTime + timeInterval
+//            player!.play(atTime: timeOffset)
+//        }
+//        catch {
+//            // Handle error
+//        }
+        NotificationHandler.shared.playSound()
+    }
+    
+    func stopSound() {
+        NotificationHandler.shared.stopSound()
     }
 }
 
@@ -211,12 +216,12 @@ extension ViewController: CLLocationManagerDelegate {
 //        This method performs the request asynchronously and delivers the results to the location manager’s delegate.
 //        You must implement the locationManager(_:didDetermineState:for:) method in the delegate to receive the results.
         manager.requestState(for: region)
-        NotificationHandler.shared.showNotification(title: "did start monitoring for region", body: "\(region.identifier)")
+//        NotificationHandler.shared.showNotification(title: "did start monitoring for region", body: "\(region.identifier)")
     }
     
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         log("did monitoring failed \(error.localizedDescription)")
-        NotificationHandler.shared.showNotification(title: "did fail for region", body: "")
+//        NotificationHandler.shared.showNotification(title: "did fail for region", body: "")
     }
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -228,19 +233,20 @@ extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         log("did exit region")
         NotificationHandler.shared.showNotification(title: "did exit region", body: "\(region.identifier)")
+        stopSound()
     }
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        playSound()
+//        playSound()
         switch state {
         case .unknown:
             log("did determin unknown region")
         case .inside:
             log("did determin inside of region")
-            NotificationHandler.shared.showNotification(title: "did determin state", body: "inside")
+//            NotificationHandler.shared.showNotification(title: "did determin state", body: "inside")
         case .outside:
             log("did determin outside of region")
-            NotificationHandler.shared.showNotification(title: "did determin state", body: "outside")
+//            NotificationHandler.shared.showNotification(title: "did determin state", body: "outside")
         default:
             log("did determin unknown region")
         }
@@ -272,7 +278,7 @@ extension ViewController{
     func send(_ beacons: [CLBeacon]) {
         for beacon in beacons {
 //            NotificationHandler.shared.showNotification(title: "did range region \(beacon.proximity.rawValue)", body: "")
-            log("did range region \(beacon.proximity.rawValue)")
+         log("did beacon \(beacon.uuid):\(beacon.major):\(beacon.minor) range region proximity:  \(beacon.proximity.rawValue)")
         }
     }
     

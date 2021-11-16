@@ -17,14 +17,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qcq-CY-kkF">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="791"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="umA-IV-xaJ">
-                                <rect key="frame" x="20" y="872" width="374" height="4"/>
+                                <rect key="frame" x="20" y="845" width="374" height="31"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Button"/>
                                 <connections>
@@ -36,13 +36,14 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Qcq-CY-kkF" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="EKo-06-ywt"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Qcq-CY-kkF" secondAttribute="bottom" id="JG3-kR-t5G"/>
+                            <constraint firstItem="umA-IV-xaJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="Jl0-hj-gtC"/>
+                            <constraint firstItem="Qcq-CY-kkF" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="NTH-Vv-EhN"/>
                             <constraint firstItem="umA-IV-xaJ" firstAttribute="top" secondItem="Qcq-CY-kkF" secondAttribute="bottom" constant="10" id="Wqq-LU-e71"/>
+                            <constraint firstItem="Qcq-CY-kkF" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="bck-al-4jm"/>
                             <constraint firstItem="Qcq-CY-kkF" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="dSE-G2-cks"/>
-                            <constraint firstAttribute="bottom" secondItem="umA-IV-xaJ" secondAttribute="bottom" constant="20" id="ee0-2x-nCN"/>
+                            <constraint firstAttribute="bottom" secondItem="umA-IV-xaJ" secondAttribute="bottom" constant="20" id="fqB-cP-PPm"/>
                             <constraint firstItem="umA-IV-xaJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="lpQ-94-bKR"/>
-                            <constraint firstAttribute="trailing" secondItem="Qcq-CY-kkF" secondAttribute="trailing" id="m20-pd-a8v"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="umA-IV-xaJ" secondAttribute="trailing" constant="20" id="vGF-te-kL4"/>
+                            <constraint firstAttribute="trailing" secondItem="umA-IV-xaJ" secondAttribute="trailing" constant="20" id="ux6-a3-CYf"/>
                         </constraints>
                     </view>
                     <connections>

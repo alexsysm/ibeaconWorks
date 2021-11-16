@@ -9,9 +9,12 @@
 import Foundation
 import UserNotifications
 import UIKit
+import AVKit
 
 class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationHandler()
+    
+    var player : AVAudioPlayer?
     
     private override init() {
         super.init()
@@ -29,7 +32,6 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         } else {
             self.registerForLocalNotification(on: UIApplication.shared)
         }
-        
     }
     
     func getNotificationSettings() {
@@ -51,8 +53,10 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
             let content = UNMutableNotificationContent()
             content.title = title
             content.body = body
+//            content.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: "FindPhoneSound.mp3"))
             content.sound = UNNotificationSound.default
-            
+            content.categoryIdentifier = "TAG_FIND_PHONE_ALARM"
+
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
             
             let request = UNNotificationRequest(identifier: UUID().uuidString,
@@ -88,6 +92,44 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     @available(iOS 10.0, *)
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
 
-        completionHandler([.alert, .sound, .badge])
+        completionHandler([.banner, .sound])
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+//        if response.notification.request.content.categoryIdentifier == "TAG_FIND_PHONE_ALARM" {
+            playSound()
+//        }
+
+        completionHandler()
+    }
+    
+    func playSound() {
+        guard let soundFileURL = Bundle.main.url(forResource: "FindPhoneSound", withExtension: "mp3") else {
+            return
+        }
+
+        do {
+            player = try AVAudioPlayer(contentsOf: soundFileURL)
+//            player?.numberOfLoops = 1
+            player?.prepareToPlay()
+            
+            // Configure and activate the AVAudioSession
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+            UIApplication.shared.beginReceivingRemoteControlEvents()
+
+            let timeInterval = 1.0
+            let timeOffset = player!.deviceCurrentTime + timeInterval
+            player!.play(atTime: timeOffset)
+        }
+        catch {
+            // Handle error
+        }
+    }
+    
+    func stopSound() {
+        if let player = self.player {
+            player.stop()
+        }
     }
 }

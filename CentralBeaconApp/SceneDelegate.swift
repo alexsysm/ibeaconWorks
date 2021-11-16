@@ -8,7 +8,7 @@
 import UIKit
 import AVKit
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, UNUserNotificationCenterDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     var audioViewController: ViewController? = nil
@@ -19,10 +19,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UNUserNotificationCente
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
-        
-        let notificationCenter = UNUserNotificationCenter.current()
-        notificationCenter.requestAuthorization(options: [.sound]) { _, e in }
-        notificationCenter.delegate = self
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -46,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UNUserNotificationCente
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
         if (audioViewController != nil) {
-            audioViewController!.player?.stop()
+            audioViewController!.stopSound()
         }
         print("sceneWillEnterForeground \(scene)")
     }
@@ -57,16 +53,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UNUserNotificationCente
         // to restore the scene back to its current state.
         print("sceneDidEnterBackground \(scene)")
     }
-
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-
-        print("userNotificationCenter willPresent withCompletionHandler")
-
-        if (audioViewController != nil) {
-            audioViewController!.playSound()
-        }
-
-        completionHandler([.sound])
-     }
 }
 
