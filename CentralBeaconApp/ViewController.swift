@@ -28,8 +28,6 @@ class ViewController: UIViewController {
         if let sceneDelegate : SceneDelegate = (scene?.delegate as? SceneDelegate) {
             sceneDelegate.audioViewController = self;
         }
-
-//        playSound()
     }
     
     @IBAction func onClick(_ sender: Any) {
@@ -85,17 +83,19 @@ class ViewController: UIViewController {
 //                let uuid = UUID(uuidString: "086704EE-9611-4ACC-91DB-F983ABAC9153")!
                 let uuid = UUID(uuidString: "74278BDA-B644-4520-8F0C-720EAF059935")!    // locate manager pre-setting UUID
 //                let uuid = UUID(uuidString: "CFC50F84-BEAC-473B-98A1-28DD3089788F")!    // 전팀장님이 준 UUID
-//                let uuid = UUID(uuidString: "10F86430-1346-11E4-9191-0800200C9A66")!
+//                let uuid = UUID(uuidString: "9d410000-35d6-f4dd-ba60-e7bd8dc491c0")!    // Tile Beacon
 
                 let major = CLBeaconMajorValue(123)
                 let minor = CLBeaconMinorValue(456)
-//                let major = CLBeaconMajorValue(1)
-//                let minor = CLBeaconMinorValue(1)
-//                let major = CLBeaconMajorValue(0x38)
-//                let minor = CLBeaconMinorValue(0xB3)
+//                let major = CLBeaconMajorValue(20523)
+//                let minor = CLBeaconMinorValue(14779)
 
                 let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
                 let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
+                
+                beaconRegion.notifyOnExit = true
+                beaconRegion.notifyOnEntry = true
+//                beaconRegion.notifyEntryStateOnDisplay = true
 
                 locationManager.startMonitoring(for: beaconRegion)
                 locationManager.startRangingBeacons(satisfying: beaconRegionConstraints)
@@ -105,18 +105,16 @@ class ViewController: UIViewController {
 
     func stopBeaconScanning() {
         if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-            if CLLocationManager.isRangingAvailable() {
+//            if CLLocationManager.isRangingAvailable() {
 //                let uuid = UUID(uuidString: "086704EE-9611-4ACC-91DB-F983ABAC9153")!
                 let uuid = UUID(uuidString: "74278BDA-B644-4520-8F0C-720EAF059935")!    // locate manager pre-setting UUID
 //                let uuid = UUID(uuidString: "CFC50F84-BEAC-473B-98A1-28DD3089788F")!    // 전팀장님이 준 UUID
-//                let uuid = UUID(uuidString: "10F86430-1346-11E4-9191-0800200C9A66")!
+//                let uuid = UUID(uuidString: "9d410000-35d6-f4dd-ba60-e7bd8dc491c0")!    // Tile Beacon
 
                 let major = CLBeaconMajorValue(123)
                 let minor = CLBeaconMinorValue(456)
-//                let major = CLBeaconMajorValue(1)
-//                let minor = CLBeaconMinorValue(1)
-//                let major = CLBeaconMajorValue(0x38)
-//                let minor = CLBeaconMinorValue(0xB3)
+//                let major = CLBeaconMajorValue(20523)
+//                let minor = CLBeaconMinorValue(14779)
 
                 let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
 //                let beaconRegion = CLBeaconRegion(uuid: uuid, identifier: uuid.uuidString)
@@ -126,7 +124,7 @@ class ViewController: UIViewController {
                 locationManager.stopRangingBeacons(satisfying: beaconRegionConstraints)
                 
                 locationManager.showsBackgroundLocationIndicator = false
-            }
+//            }
         }
     }
 
@@ -138,26 +136,19 @@ class ViewController: UIViewController {
         locationManager.stopUpdatingLocation()
     }
     
+    @IBAction func getState(_ sender: Any) {
+        let uuid = UUID(uuidString: "74278BDA-B644-4520-8F0C-720EAF059935")!    // locate manager pre-setting UUID
+//        let uuid = UUID(uuidString: "9d410000-35d6-f4dd-ba60-e7bd8dc491c0")!    // Tile Beacon
+        let major = CLBeaconMajorValue(123)
+        let minor = CLBeaconMinorValue(456)
+//        let major = CLBeaconMajorValue(20523)
+//        let minor = CLBeaconMinorValue(14779)
+
+        let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
+        locationManager.requestState(for: beaconRegion)
+    }
+
     func playSound() {
-//        guard let soundFileURL = Bundle.main.url(forResource: "FindPhoneSound", withExtension: "mp3") else {
-//            return
-//        }
-//
-//        do {
-//            // Configure and activate the AVAudioSession
-//            try AVAudioSession.sharedInstance().setCategory(.playback)
-//            try AVAudioSession.sharedInstance().setActive(true)
-//            UIApplication.shared.beginReceivingRemoteControlEvents()
-//
-//            player = try AVAudioPlayer(contentsOf: soundFileURL)
-//
-//            let timeInterval = 60.0
-//            let timeOffset = player!.deviceCurrentTime + timeInterval
-//            player!.play(atTime: timeOffset)
-//        }
-//        catch {
-//            // Handle error
-//        }
         NotificationHandler.shared.playSound()
     }
     
@@ -216,7 +207,7 @@ extension ViewController: CLLocationManagerDelegate {
 //        This method performs the request asynchronously and delivers the results to the location manager’s delegate.
 //        You must implement the locationManager(_:didDetermineState:for:) method in the delegate to receive the results.
         manager.requestState(for: region)
-//        NotificationHandler.shared.showNotification(title: "did start monitoring for region", body: "\(region.identifier)")
+        NotificationHandler.shared.showNotification(title: "did start monitoring for region", body: "\(region.identifier)")
     }
     
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
@@ -225,15 +216,17 @@ extension ViewController: CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        log("did enter region")
+        let r: CLBeaconRegion = region as! CLBeaconRegion;
+        log("did enter region \(r.uuid), \(String(describing: r.major)), \(String(describing: r.minor))")
         NotificationHandler.shared.showNotification(title: "did enter region", body: "\(region.identifier): \(region.description)")
         playSound()
     }
 
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        log("did exit region")
+        let r: CLBeaconRegion = region as! CLBeaconRegion;
+        log("did exit region \(r.uuid), \(String(describing: r.major)), \(String(describing: r.minor))")
         NotificationHandler.shared.showNotification(title: "did exit region", body: "\(region.identifier)")
-        stopSound()
+//        stopSound()
     }
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
@@ -243,10 +236,10 @@ extension ViewController: CLLocationManagerDelegate {
             log("did determin unknown region")
         case .inside:
             log("did determin inside of region")
-//            NotificationHandler.shared.showNotification(title: "did determin state", body: "inside")
+            NotificationHandler.shared.showNotification(title: "did determin state", body: "inside")
         case .outside:
             log("did determin outside of region")
-//            NotificationHandler.shared.showNotification(title: "did determin state", body: "outside")
+            NotificationHandler.shared.showNotification(title: "did determin state", body: "outside")
         default:
             log("did determin unknown region")
         }
