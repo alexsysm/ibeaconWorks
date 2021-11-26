@@ -16,6 +16,9 @@ class ViewController: UIViewController {
 //    var player : AVAudioPlayer?
 
     @IBOutlet weak var logger: UITextView!
+    
+    
+    var beaconsToRangeConstraints: [CLBeaconIdentityConstraint] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,7 +103,7 @@ class ViewController: UIViewController {
 //                beaconRegion.notifyEntryStateOnDisplay = true
 
                 locationManager.startMonitoring(for: beaconRegion)
-                locationManager.startRangingBeacons(satisfying: beaconRegionConstraints)
+//                locationManager.startRangingBeacons(satisfying: beaconRegionConstraints)
             }
         }
     }
@@ -121,10 +124,10 @@ class ViewController: UIViewController {
 //                let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
                 let beaconRegion = CLBeaconRegion(uuid: uuid, identifier: uuid.uuidString)
 //                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
-                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid)
+                let beaconRegionConstraint = CLBeaconIdentityConstraint(uuid: uuid)
 
                 locationManager.stopMonitoring(for: beaconRegion)
-                locationManager.stopRangingBeacons(satisfying: beaconRegionConstraints)
+                locationManager.stopRangingBeacons(satisfying: beaconRegionConstraint)
                 
                 locationManager.showsBackgroundLocationIndicator = false
 //            }
@@ -197,11 +200,41 @@ extension ViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didRange beacons: [CLBeacon], satisfying beaconConstraint: CLBeaconIdentityConstraint) {
-        if let beacon = beacons.first {
-            update(distance: beacon.proximity)
-            send(beacons)
-        } else {
-            update(distance: .unknown)
+        if beacons.count > 0 {
+            // 여기서 첫번째 비콘을 찾는게 아니고 웰나우가 등록한 비콘의 maj/min을 찾습니다.
+            // 1개만 있다고 가정하고 아래에서 123/456으로 하드코딩했으므로 다음과 같이 코딩합니다. 수정하세요.
+            let nearestBeacon = beacons.first!
+            let major = CLBeaconMajorValue(truncating: nearestBeacon.major)
+            let minor = CLBeaconMinorValue(truncating: nearestBeacon.minor)
+
+            switch nearestBeacon.proximity {
+            // Sound 재생 거리를 조정하세요.
+            case .near, .immediate:
+                // 푸시 & 사운드
+                NotificationHandler.shared.showNotification(title: "did range near or immediate", body: "\(major): \(minor)")
+                playSound()
+                
+                update(distance: nearestBeacon.proximity)
+                send(beacons)
+                break
+
+            default:
+
+                beaconsToRangeConstraints.forEach { beaconRegionConstraint in
+                    // 여기서 maj/min 찾아서 해당 beaconRegion만 중지 합니다.
+                    // 여기서는 하나 밖에 없다고 생각하고 다 중지 시킵니다. 수정하세요.
+                    // 시뮬레이터로 하면 폰에서 멀어지면 중지 될 것이고, Tag 로하면 2초뒤에 꺼지니까 중지되어야 합니다.
+                    manager.stopRangingBeacons(satisfying: beaconConstraint)
+                }
+                
+                NotificationHandler.shared.showNotification(title: "did range far or unknown", body: "\(major): \(minor)")
+                stopSound()
+
+                update(distance: nearestBeacon.proximity)
+                send(beacons)
+                
+                break
+            }
         }
     }
 
@@ -219,17 +252,29 @@ extension ViewController: CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        let r: CLBeaconRegion = region as! CLBeaconRegion;
-        log("did enter region \(r.uuid), \(String(describing: r.major)), \(String(describing: r.minor))")
-        NotificationHandler.shared.showNotification(title: "did enter region", body: "\(region.identifier): \(region.description)")
-        playSound()
+        if region is CLBeaconRegion {
+            if CLLocationManager.isRangingAvailable() {
+                let beaconRegion: CLBeaconRegion = region as! CLBeaconRegion;
+                log("did enter region \(beaconRegion.uuid), \(String(describing: beaconRegion.major)), \(String(describing: beaconRegion.minor))")
+
+                let major = CLBeaconMajorValue(123)
+                let minor = CLBeaconMinorValue(456)
+                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: beaconRegion.uuid, major: major, minor: minor)
+//                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid)
+                
+                manager.startRangingBeacons(satisfying: beaconRegionConstraints)
+
+                // Store the beacon so that ranging can be stopped on demand.
+                beaconsToRangeConstraints.append(beaconRegionConstraints)
+            }
+        }
     }
 
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         let r: CLBeaconRegion = region as! CLBeaconRegion;
         log("did exit region \(r.uuid), \(String(describing: r.major)), \(String(describing: r.minor))")
         NotificationHandler.shared.showNotification(title: "did exit region", body: "\(region.identifier)")
-//        stopSound()
+        stopSound()
     }
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
