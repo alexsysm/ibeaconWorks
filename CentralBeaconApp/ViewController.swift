@@ -94,7 +94,7 @@ class ViewController: UIViewController {
 //                let beaconRegion = CLBeaconRegion(uuid: uuid, identifier: uuid.uuidString)
                 let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
 //                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid)
-                
+
                 beaconRegion.notifyOnExit = true
                 beaconRegion.notifyOnEntry = true
 //                beaconRegion.notifyEntryStateOnDisplay = true
