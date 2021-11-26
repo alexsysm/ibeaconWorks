@@ -85,13 +85,15 @@ class ViewController: UIViewController {
 //                let uuid = UUID(uuidString: "CFC50F84-BEAC-473B-98A1-28DD3089788F")!    // 전팀장님이 준 UUID
 //                let uuid = UUID(uuidString: "9d410000-35d6-f4dd-ba60-e7bd8dc491c0")!    // Tile Beacon
 
-                let major = CLBeaconMajorValue(123)
-                let minor = CLBeaconMinorValue(456)
+//                let major = CLBeaconMajorValue(123)
+//                let minor = CLBeaconMinorValue(456)
 //                let major = CLBeaconMajorValue(20523)
 //                let minor = CLBeaconMinorValue(14779)
 
-                let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
-                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
+//                let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
+                let beaconRegion = CLBeaconRegion(uuid: uuid, identifier: uuid.uuidString)
+//                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
+                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid)
                 
                 beaconRegion.notifyOnExit = true
                 beaconRegion.notifyOnEntry = true
@@ -111,14 +113,15 @@ class ViewController: UIViewController {
 //                let uuid = UUID(uuidString: "CFC50F84-BEAC-473B-98A1-28DD3089788F")!    // 전팀장님이 준 UUID
 //                let uuid = UUID(uuidString: "9d410000-35d6-f4dd-ba60-e7bd8dc491c0")!    // Tile Beacon
 
-                let major = CLBeaconMajorValue(123)
-                let minor = CLBeaconMinorValue(456)
+//                let major = CLBeaconMajorValue(123)
+//                let minor = CLBeaconMinorValue(456)
 //                let major = CLBeaconMajorValue(20523)
 //                let minor = CLBeaconMinorValue(14779)
 
-                let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
-//                let beaconRegion = CLBeaconRegion(uuid: uuid, identifier: uuid.uuidString)
-                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
+//                let beaconRegion = CLBeaconRegion(uuid: uuid, major: major, minor: minor, identifier: uuid.uuidString)
+                let beaconRegion = CLBeaconRegion(uuid: uuid, identifier: uuid.uuidString)
+//                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid, major: major, minor: minor)
+                let beaconRegionConstraints = CLBeaconIdentityConstraint(uuid: uuid)
 
                 locationManager.stopMonitoring(for: beaconRegion)
                 locationManager.stopRangingBeacons(satisfying: beaconRegionConstraints)
